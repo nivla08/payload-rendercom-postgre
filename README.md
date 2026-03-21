@@ -12,7 +12,7 @@ This starter is intentionally not a demo app. It focuses on production-grade bui
 - REST-first API surface with GraphQL disabled by default
 - Payload schema migrations plus optional app/data migrations
 - generic starter collections and globals
-- plop generators for collections, globals, and blocks
+- plop generators for collections/globals plus interactive field/block scaffolding
 - environment validation, deployment guides, and team docs
 
 ## Quick start
@@ -105,6 +105,7 @@ docs/
 - `pnpm seed`
 - `pnpm verify`
 - `pnpm gen`
+- `pnpm gen:field`
 - `pnpm gen:collection`
 - `pnpm gen:global`
 - `pnpm gen:block`
