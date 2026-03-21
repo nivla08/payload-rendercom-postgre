@@ -1,0 +1,49 @@
+import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import type { CollectionConfig } from 'payload'
+
+import { adminOnly, canAccessAdmin, readPublishedOrPrivileged } from '@/cms/access'
+import { authorField } from '@/cms/fields/authorship'
+import { publishingSidebarFields } from '@/cms/fields/publishing'
+import { metaFieldGroup } from '@/cms/fields/seo'
+import { slugField } from '@/cms/fields/slug'
+import { assignAuthor } from './hooks/assignAuthor'
+import { createAuditHooks } from './hooks/createAuditHooks'
+import { setPublishedAt } from './hooks/setPublishedAt'
+
+export const {{pascalCase name}}: CollectionConfig = {
+  slug: '{{kebabCase name}}',
+  access: {
+    admin: canAccessAdmin([]),
+    create: adminOnly,
+    delete: adminOnly,
+    read: readPublishedOrPrivileged,
+    update: adminOnly,
+  },
+  admin: {
+    useAsTitle: 'title',
+    defaultColumns: ['title', 'slug', '_status', 'updatedAt'],
+  },
+  fields: [
+    {
+      name: 'title',
+      type: 'text',
+      required: true,
+    },
+    slugField(),
+    ...publishingSidebarFields(),
+    authorField(),
+    {
+      name: 'content',
+      type: 'richText',
+      editor: lexicalEditor(),
+    },
+    metaFieldGroup(),
+  ],
+  hooks: {
+    ...createAuditHooks(),
+    beforeChange: [assignAuthor, setPublishedAt],
+  },
+  versions: {
+    drafts: true,
+  },
+}

@@ -1,0 +1,15 @@
+import type { GlobalConfig } from 'payload'
+
+import { adminOnly } from '@/cms/access'
+
+export const {{pascalCase name}}: GlobalConfig = {
+  slug: '{{kebabCase name}}',
+  access: {
+    read: () => true,
+    update: adminOnly,
+  },
+  admin: {
+    group: 'Globals',
+  },
+  fields: [],
+}

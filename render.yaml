@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: payload-postgres-starter
+    runtime: node
+    buildCommand: pnpm install --frozen-lockfile && pnpm build
+    startCommand: pnpm start
+    preDeployCommand: pnpm migrate && pnpm migrate:app
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 22.22.0
+      - key: PAYLOAD_SECRET
+        generateValue: true

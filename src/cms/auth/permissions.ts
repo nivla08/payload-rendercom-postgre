@@ -1,0 +1,35 @@
+export const PERMISSIONS = {
+  ADMIN_ACCESS: 'admin:access',
+  AUDIT_LOGS_READ: 'audit-logs:read',
+  MEDIA_ACCESS: 'media:access',
+  MEDIA_CREATE: 'media:create',
+  MEDIA_UPDATE: 'media:update',
+  MEDIA_UPDATE_OWN: 'media:update-own',
+  MEDIA_DELETE: 'media:delete',
+  MEDIA_DELETE_OWN: 'media:delete-own',
+  PAGES_ACCESS: 'pages:access',
+  PAGES_CREATE: 'pages:create',
+  PAGES_UPDATE: 'pages:update',
+  PAGES_UPDATE_OWN: 'pages:update-own',
+  PAGES_DELETE: 'pages:delete',
+  PAGES_DELETE_OWN: 'pages:delete-own',
+  POSTS_ACCESS: 'posts:access',
+  POSTS_CREATE: 'posts:create',
+  POSTS_UPDATE: 'posts:update',
+  POSTS_UPDATE_OWN: 'posts:update-own',
+  POSTS_DELETE: 'posts:delete',
+  POSTS_DELETE_OWN: 'posts:delete-own',
+  REDIRECTS_ACCESS: 'redirects:access',
+  REDIRECTS_CREATE: 'redirects:create',
+  REDIRECTS_UPDATE: 'redirects:update',
+  REDIRECTS_DELETE: 'redirects:delete',
+  SETTINGS_UPDATE: 'settings:update',
+  USERS_CREATE: 'users:create',
+  USERS_READ: 'users:read',
+  USERS_UPDATE: 'users:update',
+  USERS_DELETE: 'users:delete',
+} as const
+
+export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS]
+
+export const PERMISSION_VALUES = Object.values(PERMISSIONS) as Permission[]

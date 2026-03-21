@@ -1,0 +1,34 @@
+import type { CollectionConfig } from 'payload'
+
+import { writeAuditLog } from '@/cms/utilities/audit'
+
+/**
+ * Local audit hooks keep generated collection behavior beside the collection.
+ */
+export const createAuditHooks = (): Pick<CollectionConfig, 'hooks'>['hooks'] => ({
+  afterChange: [
+    async ({ doc, operation, req }) => {
+      if (operation !== 'create' && operation !== 'update') return
+      if (!doc?.id) return
+
+      await writeAuditLog({
+        action: operation,
+        collection: '{{kebabCase name}}',
+        docId: doc.id,
+        req,
+      })
+    },
+  ],
+  afterDelete: [
+    async ({ id, req }) => {
+      if (!id) return
+
+      await writeAuditLog({
+        action: 'delete',
+        collection: '{{kebabCase name}}',
+        docId: id,
+        req,
+      })
+    },
+  ],
+})
