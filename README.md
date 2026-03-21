@@ -1,6 +1,6 @@
-# Payload Render + Postgres Starter
+# Payload Postgres Starter
 
-Reusable Payload CMS starter for Node.js deployments on Render.com with PostgreSQL.
+Reusable Payload CMS starter for Node.js deployments with PostgreSQL.
 
 This starter is intentionally not a demo app. It focuses on production-grade building blocks that future Payload projects usually need:
 
@@ -13,7 +13,7 @@ This starter is intentionally not a demo app. It focuses on production-grade bui
 - Payload schema migrations plus optional app/data migrations
 - generic starter collections and globals
 - plop generators for collections, globals, and blocks
-- environment validation, Render deployment notes, and team docs
+- environment validation, deployment guides, and team docs
 
 ## Quick start
 
@@ -32,18 +32,18 @@ Set `PROJECT_DB_NAME` to the same value for an easy team convention.
 If `5432` is already taken on your machine, set `LOCAL_POSTGRES_PORT` and update
 `DATABASE_URL` to match, for example `5433`.
 
-For Render deploys, the starter now includes:
+Platform-ready notes:
 
 - explicit Node version pinning via `.node-version` and `render.yaml`
-- generated `PAYLOAD_SECRET` support in the Blueprint
-- `preDeployCommand` for committed DB/app migrations
-- `/api/health` as the service health check
+- `/api/health` as a generic health endpoint
+- official S3-compatible object storage support for production media
+- provider-specific docs for Render, Vercel, Neon, and Supabase
 
 ## Starter plan
 
 Must-have:
 
-- Render-ready Node + PostgreSQL baseline
+- deployment-ready Node + PostgreSQL baseline
 - reusable RBAC and access helpers
 - SMTP/email service abstraction
 - safe user deletion and last-super-admin protection
@@ -112,7 +112,10 @@ docs/
 ## Documentation
 
 - [Setup](./docs/setup.md)
+- [Deployment Overview](./docs/deployment.md)
 - [Render Deploy](./docs/render-deploy.md)
+- [Vercel Deploy](./docs/vercel-deploy.md)
+- [Database Providers](./docs/database-providers.md)
 - [Migrations](./docs/migrations.md)
 - [RBAC](./docs/rbac.md)
 - [Email](./docs/email.md)

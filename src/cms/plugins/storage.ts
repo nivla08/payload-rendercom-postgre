@@ -1,3 +1,4 @@
+import { s3Storage } from '@payloadcms/storage-s3'
 import type { Plugin } from 'payload'
 
 import { env } from '@/config/env'
@@ -12,9 +13,30 @@ import { env } from '@/config/env'
 export const createStoragePlugins = (): Plugin[] => {
   if (env.storageProvider !== 's3') return []
 
-  console.warn(
-    '[storage] PAYLOAD_STORAGE_PROVIDER is set to s3, but no storage plugin is installed yet. Add an S3-compatible Payload storage plugin before using this in production.',
-  )
-
-  return []
+  return [
+    s3Storage({
+      acl: env.storage.s3.acl === 'private' ? 'private' : 'public-read',
+      bucket: env.storage.s3.bucket as string,
+      collections: {
+        media: env.storage.s3.prefix
+          ? {
+              prefix: env.storage.s3.prefix,
+            }
+          : true,
+      },
+      config: {
+        credentials:
+          env.storage.s3.accessKeyId && env.storage.s3.secretAccessKey
+            ? {
+                accessKeyId: env.storage.s3.accessKeyId,
+                secretAccessKey: env.storage.s3.secretAccessKey,
+              }
+            : undefined,
+        endpoint: env.storage.s3.endpoint,
+        forcePathStyle: env.storage.s3.forcePathStyle,
+        region: env.storage.s3.region,
+      },
+      disableLocalStorage: true,
+    }),
+  ]
 }

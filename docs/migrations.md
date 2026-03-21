@@ -54,7 +54,7 @@ Important:
 
 - interactive prompts are for local migration generation time
 - deployment should not depend on answering rename prompts manually
-- production/Render should apply the already-committed migration with `pnpm migrate`
+- production deployments should apply the already-committed migration with `pnpm migrate`
 - if deployment would need someone to choose between "create table" and "rename table", the migration workflow is not finished yet
 
 For fresh starter experimentation only:
@@ -79,4 +79,4 @@ pnpm migrate:app
 
 ## Production safety
 
-On Render, run `pnpm migrate && pnpm migrate:app` as the pre-deploy command so the release is ready before traffic shifts.
+On platforms that support a pre-deploy step, run `pnpm migrate && pnpm migrate:app` before the new release receives traffic.

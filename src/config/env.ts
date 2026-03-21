@@ -5,6 +5,7 @@ type EnvSource = NodeJS.ProcessEnv
 export type StarterEnv = {
   allowedOrigins: string[]
   databaseUrl: string
+  embedAllowedHosts: string[]
   enableDbMigrations: boolean
   enableSeed: boolean
   email: {
@@ -22,8 +23,21 @@ export type StarterEnv = {
   }
   mediaDir: string
   payloadSecret: string
+  previewSecret: string
   publicServerUrl: string
   storageProvider: 'local' | 's3'
+  storage: {
+    s3: {
+      accessKeyId?: string
+      acl?: string
+      bucket?: string
+      endpoint?: string
+      forcePathStyle: boolean
+      prefix?: string
+      region?: string
+      secretAccessKey?: string
+    }
+  }
 }
 
 const truthy = new Set(['1', 'true', 'yes', 'on'])
@@ -65,6 +79,15 @@ const readAllowedOrigins = (source: EnvSource, fallbackOrigin: string): string[]
     .filter(Boolean)
 }
 
+const readList = (value: string | undefined): string[] => {
+  const normalized = readString(value)
+  if (!normalized) return []
+  return normalized
+    .split(',')
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+}
+
 const readEmailProvider = (source: EnvSource): 'console' | 'smtp' => {
   const explicitProvider = readString(source.PAYLOAD_EMAIL_PROVIDER)?.toLowerCase()
   if (explicitProvider === 'smtp') return 'smtp'
@@ -76,7 +99,8 @@ const readEmailProvider = (source: EnvSource): 'console' | 'smtp' => {
 
 const buildEnv = (source: EnvSource): StarterEnv => {
   const nodeEnv = readString(source.NODE_ENV) ?? 'development'
-  const isHostedProduction = nodeEnv === 'production' && readBoolean(source.RENDER, false)
+  const isHostedProduction =
+    nodeEnv === 'production' && (readBoolean(source.RENDER, false) || Boolean(readString(source.VERCEL)))
   const publicServerUrl = readString(source.PAYLOAD_PUBLIC_SERVER_URL) ?? (
     isHostedProduction ? undefined : 'http://localhost:3000'
   )
@@ -93,10 +117,18 @@ const buildEnv = (source: EnvSource): StarterEnv => {
   }
 
   const emailProvider = readEmailProvider(source)
+  const previewSecret = readString(source.PAYLOAD_PREVIEW_SECRET) ?? payloadSecret
+  const storageProvider = readString(source.PAYLOAD_STORAGE_PROVIDER) === 's3' ? 's3' : 'local'
+  const s3Bucket = readString(source.PAYLOAD_STORAGE_S3_BUCKET)
+
+  if (storageProvider === 's3' && !s3Bucket) {
+    throw new Error('[env] PAYLOAD_STORAGE_S3_BUCKET is required when PAYLOAD_STORAGE_PROVIDER=s3')
+  }
 
   return {
     allowedOrigins: readAllowedOrigins(source, publicServerUrl),
     databaseUrl: readRequired('DATABASE_URL', source),
+    embedAllowedHosts: readList(source.PAYLOAD_EMBED_ALLOWED_HOSTS),
     enableDbMigrations: readBoolean(source.PAYLOAD_ENABLE_DB_MIGRATIONS, true),
     enableSeed: readBoolean(source.PAYLOAD_ENABLE_SEED, false),
     email: {
@@ -114,8 +146,21 @@ const buildEnv = (source: EnvSource): StarterEnv => {
     },
     mediaDir: readString(source.PAYLOAD_MEDIA_DIR) ?? 'media',
     payloadSecret,
+    previewSecret,
     publicServerUrl,
-    storageProvider: readString(source.PAYLOAD_STORAGE_PROVIDER) === 's3' ? 's3' : 'local',
+    storageProvider,
+    storage: {
+      s3: {
+        accessKeyId: readString(source.PAYLOAD_STORAGE_S3_ACCESS_KEY_ID),
+        acl: readString(source.PAYLOAD_STORAGE_S3_ACL),
+        bucket: s3Bucket,
+        endpoint: readString(source.PAYLOAD_STORAGE_S3_ENDPOINT),
+        forcePathStyle: readBoolean(source.PAYLOAD_STORAGE_S3_FORCE_PATH_STYLE, false),
+        prefix: readString(source.PAYLOAD_STORAGE_S3_PREFIX),
+        region: readString(source.PAYLOAD_STORAGE_S3_REGION),
+        secretAccessKey: readString(source.PAYLOAD_STORAGE_S3_SECRET_ACCESS_KEY),
+      },
+    },
   }
 }
 

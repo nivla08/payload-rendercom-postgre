@@ -15,6 +15,6 @@ test.describe('Frontend', () => {
 
     const heading = page.locator('h1').first()
 
-    await expect(heading).toHaveText('Payload Render + Postgres Starter')
+    await expect(heading).toHaveText('Payload Starter')
   })
 })

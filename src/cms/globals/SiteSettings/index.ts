@@ -1,12 +1,16 @@
 import type { GlobalConfig } from 'payload'
 
 import { canAccessSettings } from '@/cms/access'
+import { syncSiteSettingsMediaUsage } from './hooks/syncMediaUsage'
 
 export const SiteSettings: GlobalConfig = {
   slug: 'site-settings',
   access: {
     read: () => true,
     update: canAccessSettings,
+  },
+  hooks: {
+    afterChange: [syncSiteSettingsMediaUsage],
   },
   fields: [
     {

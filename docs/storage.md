@@ -1,6 +1,6 @@
 # Storage
 
-This starter defaults to local disk uploads for development.
+This starter defaults to local disk uploads for development and uses Payload's built-in folder support for the media library.
 
 ## Local
 
@@ -8,18 +8,25 @@ This starter defaults to local disk uploads for development.
 - good for local work and disposable environments
 - not durable enough for multi-instance or long-lived Render media storage
 
-## S3-compatible extension point
+## S3-compatible production storage
 
-The starter includes a storage plugin extension point at:
+The starter wires the official Payload S3 adapter at:
 
 - `src/cms/plugins/storage.ts`
 
-When `PAYLOAD_STORAGE_PROVIDER=s3`, the starter currently warns instead of silently pretending uploads are durable.
+When `PAYLOAD_STORAGE_PROVIDER=s3`, configure:
 
-To enable production-safe object storage:
+1. `PAYLOAD_STORAGE_S3_BUCKET`
+2. `PAYLOAD_STORAGE_S3_REGION`
+3. optional endpoint / credential vars for AWS, R2, MinIO, or another S3-compatible provider
 
-1. install an S3-compatible Payload storage plugin
-2. wire it inside `src/cms/plugins/storage.ts`
-3. configure the required bucket/credential env vars
+## Media usage tracking
 
-This keeps the starter honest: local storage works now, and durable object storage has a clear integration point when a project needs it.
+Media documents keep a starter-managed `usage` array that records where uploads are currently referenced.
+
+Tracked by default:
+
+- pages
+- posts
+- shared blocks
+- site settings default meta image

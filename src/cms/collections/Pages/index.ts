@@ -12,9 +12,11 @@ import { authorField } from '@/cms/fields/authorship'
 import { metaFieldGroup } from '@/cms/fields/seo'
 import { publishingSidebarFields } from '@/cms/fields/publishing'
 import { slugField } from '@/cms/fields/slug'
+import { buildPreviewURL } from '@/lib/preview'
 import { createAuditHooks } from './hooks/createAuditHooks'
 import { assignAuthor } from './hooks/assignAuthor'
 import { setPublishedAt } from './hooks/setPublishedAt'
+import { syncPageMediaUsageAfterChange, syncPageMediaUsageAfterDelete } from './hooks/syncMediaUsage'
 
 export const Pages: CollectionConfig = {
   slug: 'pages',
@@ -37,6 +39,7 @@ export const Pages: CollectionConfig = {
     }),
   },
   admin: {
+    preview: (doc, { token }) => buildPreviewURL('pages', doc, token),
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', '_status', 'updatedAt'],
   },
@@ -57,7 +60,8 @@ export const Pages: CollectionConfig = {
     metaFieldGroup(),
   ],
   hooks: {
-    ...createAuditHooks(),
+    afterChange: [...(createAuditHooks()?.afterChange ?? []), syncPageMediaUsageAfterChange],
+    afterDelete: [...(createAuditHooks()?.afterDelete ?? []), syncPageMediaUsageAfterDelete],
     beforeChange: [assignAuthor, setPublishedAt],
   },
   versions: {

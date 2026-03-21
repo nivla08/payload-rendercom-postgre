@@ -76,11 +76,16 @@ export interface Config {
     posts: Post;
     redirects: Redirect;
     'payload-kv': PayloadKv;
+    'payload-folders': FolderInterface;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
   };
-  collectionsJoins: {};
+  collectionsJoins: {
+    'payload-folders': {
+      documentsAndFolders: 'payload-folders' | 'media';
+    };
+  };
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     'audit-logs': AuditLogsSelect<false> | AuditLogsSelect<true>;
@@ -91,6 +96,7 @@ export interface Config {
     posts: PostsSelect<false> | PostsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
+    'payload-folders': PayloadFoldersSelect<false> | PayloadFoldersSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -239,6 +245,20 @@ export interface Media {
   alt: string;
   caption?: string | null;
   uploadedBy?: (number | null) | User;
+  /**
+   * Starter-maintained references showing where this media item is currently used.
+   */
+  usage?:
+    | {
+        sourceType?: string | null;
+        sourceSlug?: string | null;
+        sourceID?: string | null;
+        sourceTitle?: string | null;
+        fieldPath?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  folder?: (number | null) | FolderInterface;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -271,6 +291,32 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-folders".
+ */
+export interface FolderInterface {
+  id: number;
+  name: string;
+  folder?: (number | null) | FolderInterface;
+  documentsAndFolders?: {
+    docs?: (
+      | {
+          relationTo?: 'payload-folders';
+          value: number | FolderInterface;
+        }
+      | {
+          relationTo?: 'media';
+          value: number | Media;
+        }
+    )[];
+    hasNextPage?: boolean;
+    totalDocs?: number;
+  };
+  folderType?: 'media'[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "shared-blocks".
  */
 export interface SharedBlock {
@@ -297,6 +343,58 @@ export interface SharedBlock {
         id?: string | null;
         blockName?: string | null;
         blockType: 'richText';
+      }
+    | {
+        media: number | Media;
+        caption?: string | null;
+        alignment?: ('left' | 'center' | 'right' | 'full') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'media';
+      }
+    | {
+        eyebrow?: string | null;
+        title: string;
+        copy?: string | null;
+        actions: {
+          label: string;
+          link: {
+            type: 'custom' | 'internal';
+            url?: string | null;
+            reference?:
+              | ({
+                  relationTo: 'pages';
+                  value: number | Page;
+                } | null)
+              | ({
+                  relationTo: 'posts';
+                  value: number | Post;
+                } | null);
+            newTab?: boolean | null;
+          };
+          id?: string | null;
+        }[];
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'cta';
+      }
+    | {
+        title?: string | null;
+        url: string;
+        aspectRatio?: ('16 / 9' | '4 / 3' | '1 / 1' | '21 / 9') | null;
+        caption?: string | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'embed';
+      }
+    | {
+        style?: ('callout' | 'quote') | null;
+        title?: string | null;
+        body: string;
+        citation?: string | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'callout';
       }
     | {
         shared: number | SharedBlock;
@@ -343,6 +441,58 @@ export interface Page {
             id?: string | null;
             blockName?: string | null;
             blockType: 'richText';
+          }
+        | {
+            media: number | Media;
+            caption?: string | null;
+            alignment?: ('left' | 'center' | 'right' | 'full') | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'media';
+          }
+        | {
+            eyebrow?: string | null;
+            title: string;
+            copy?: string | null;
+            actions: {
+              label: string;
+              link: {
+                type: 'custom' | 'internal';
+                url?: string | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: number | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: number | Post;
+                    } | null);
+                newTab?: boolean | null;
+              };
+              id?: string | null;
+            }[];
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cta';
+          }
+        | {
+            title?: string | null;
+            url: string;
+            aspectRatio?: ('16 / 9' | '4 / 3' | '1 / 1' | '21 / 9') | null;
+            caption?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'embed';
+          }
+        | {
+            style?: ('callout' | 'quote') | null;
+            title?: string | null;
+            body: string;
+            citation?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'callout';
           }
         | {
             shared: number | SharedBlock;
@@ -480,6 +630,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'redirects';
         value: number | Redirect;
+      } | null)
+    | ({
+        relationTo: 'payload-folders';
+        value: number | FolderInterface;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -584,6 +738,17 @@ export interface MediaSelect<T extends boolean = true> {
   alt?: T;
   caption?: T;
   uploadedBy?: T;
+  usage?:
+    | T
+    | {
+        sourceType?: T;
+        sourceSlug?: T;
+        sourceID?: T;
+        sourceTitle?: T;
+        fieldPath?: T;
+        id?: T;
+      };
+  folder?: T;
   updatedAt?: T;
   createdAt?: T;
   url?: T;
@@ -637,6 +802,58 @@ export interface SharedBlocksSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        media?:
+          | T
+          | {
+              media?: T;
+              caption?: T;
+              alignment?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cta?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              copy?: T;
+              actions?:
+                | T
+                | {
+                    label?: T;
+                    link?:
+                      | T
+                      | {
+                          type?: T;
+                          url?: T;
+                          reference?: T;
+                          newTab?: T;
+                        };
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        embed?:
+          | T
+          | {
+              title?: T;
+              url?: T;
+              aspectRatio?: T;
+              caption?: T;
+              id?: T;
+              blockName?: T;
+            };
+        callout?:
+          | T
+          | {
+              style?: T;
+              title?: T;
+              body?: T;
+              citation?: T;
+              id?: T;
+              blockName?: T;
+            };
         reusableBlock?:
           | T
           | {
@@ -665,6 +882,58 @@ export interface PagesSelect<T extends boolean = true> {
           | T
           | {
               content?: T;
+              id?: T;
+              blockName?: T;
+            };
+        media?:
+          | T
+          | {
+              media?: T;
+              caption?: T;
+              alignment?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cta?:
+          | T
+          | {
+              eyebrow?: T;
+              title?: T;
+              copy?: T;
+              actions?:
+                | T
+                | {
+                    label?: T;
+                    link?:
+                      | T
+                      | {
+                          type?: T;
+                          url?: T;
+                          reference?: T;
+                          newTab?: T;
+                        };
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        embed?:
+          | T
+          | {
+              title?: T;
+              url?: T;
+              aspectRatio?: T;
+              caption?: T;
+              id?: T;
+              blockName?: T;
+            };
+        callout?:
+          | T
+          | {
+              style?: T;
+              title?: T;
+              body?: T;
+              citation?: T;
               id?: T;
               blockName?: T;
             };
@@ -735,6 +1004,18 @@ export interface RedirectsSelect<T extends boolean = true> {
 export interface PayloadKvSelect<T extends boolean = true> {
   key?: T;
   data?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-folders_select".
+ */
+export interface PayloadFoldersSelect<T extends boolean = true> {
+  name?: T;
+  folder?: T;
+  documentsAndFolders?: T;
+  folderType?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

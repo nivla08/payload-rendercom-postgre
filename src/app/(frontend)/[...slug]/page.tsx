@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { draftMode } from 'next/headers'
 
-import { RichText, type RichTextContent } from '@/components/richtext'
+import { RenderBlocks } from '@/components/blocks/RenderBlocks'
 import { buildPageMetadata, toPlainText } from '@/lib/metadata'
 import { getSiteSettings } from '@/lib/site-settings'
 import { resolvePageByPath } from '@/lib/content'
@@ -64,7 +64,7 @@ export default async function CatchAllPage({ params }: Props) {
       </header>
 
       <div className="content-body">
-        <RichText content={page.layout as RichTextContent} />
+        <RenderBlocks blocks={page.layout as import('@/components/blocks/types').GenericBlockData[]} />
       </div>
     </article>
   )

@@ -1,5 +1,7 @@
 # Render Deploy
 
+Render is now one supported deployment target for this starter, not the core architectural assumption.
+
 ## Recommended Render service
 
 - Runtime: Node
@@ -8,6 +10,7 @@
 - Start command: `pnpm start`
 - Pre-deploy command: `pnpm migrate && pnpm migrate:app`
 - Health check path: `/api/health`
+- Blueprint file: `render.yaml` (optional convenience, not required for the starter itself)
 
 ## Required Render environment variables
 

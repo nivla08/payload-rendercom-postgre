@@ -90,16 +90,17 @@ export default async function HomePage() {
         <div className="heroBand">
           <div className="heroBandLabel">Starter posture</div>
           <p>
-            Render deployment, PostgreSQL, shared content models, editorial routing, and
+            Node deployment, PostgreSQL, shared content models, editorial routing, and
             registration controls are all shaped to be reused instead of copied project by project.
           </p>
           <div className="heroBandGrid">
+            <span>Node</span>
+            <span>Vercel</span>
             <span>Render</span>
             <span>PostgreSQL</span>
             <span>RBAC</span>
             <span>Shared Blocks</span>
-            <span>Migrations</span>
-            <span>Registration</span>
+            <span>Previews</span>
           </div>
         </div>
       </section>
@@ -132,7 +133,7 @@ export default async function HomePage() {
         <article className="panel">
           <h2>What ships with the starter</h2>
           <ul>
-            <li>PostgreSQL + Render-ready configuration</li>
+            <li>PostgreSQL + deployment-ready Node configuration</li>
             <li>RBAC with super-admin, admin, and editor roles</li>
             <li>safe user lifecycle and last-super-admin protection</li>
             <li>schema migrations, app migrations, and local bootstrap scripts</li>

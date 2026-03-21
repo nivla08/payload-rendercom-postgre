@@ -17,6 +17,7 @@ const dirname = path.dirname(filename)
 
 export const Media: CollectionConfig = {
   slug: 'media',
+  folders: true,
   access: {
     admin: canAccessAdmin([
       PERMISSIONS.MEDIA_ACCESS,
@@ -61,6 +62,40 @@ export const Media: CollectionConfig = {
       hooks: {
         beforeValidate: [setUploadedBy],
       },
+    },
+    {
+      name: 'usage',
+      type: 'array',
+      access: {
+        create: () => false,
+        update: () => false,
+      },
+      admin: {
+        description: 'Starter-maintained references showing where this media item is currently used.',
+        readOnly: true,
+      },
+      fields: [
+        {
+          name: 'sourceType',
+          type: 'text',
+        },
+        {
+          name: 'sourceSlug',
+          type: 'text',
+        },
+        {
+          name: 'sourceID',
+          type: 'text',
+        },
+        {
+          name: 'sourceTitle',
+          type: 'text',
+        },
+        {
+          name: 'fieldPath',
+          type: 'text',
+        },
+      ],
     },
   ],
   upload: {

@@ -1,5 +1,9 @@
 import React from 'react'
 
+import { CTABlock, type CTABlockData } from './CTABlock'
+import { CalloutBlock } from './CalloutBlock'
+import { EmbedBlock } from './EmbedBlock'
+import { MediaBlock, type MediaBlockData } from './MediaBlock'
 import { RichTextBlock } from './RichTextBlock'
 import type { GenericBlockData } from './types'
 
@@ -16,6 +20,10 @@ export type BlockComponent<TBlock extends GenericBlockData = GenericBlockData> =
  * `hero: ({ block }) => <HeroBlock block={block as HeroBlockData} />`
  */
 export const BLOCK_RENDERERS: Record<string, BlockComponent> = {
+  callout: ({ block }) => <CalloutBlock block={block as { body?: string; citation?: string; style?: 'callout' | 'quote'; title?: string }} />,
+  cta: ({ block }) => <CTABlock block={block as CTABlockData} />,
+  embed: ({ block }) => <EmbedBlock block={block as { aspectRatio?: string; caption?: string; title?: string; url?: string }} />,
+  media: ({ block }) => <MediaBlock block={block as MediaBlockData} />,
   richText: ({ block }) => <RichTextBlock block={block as { content?: import('@/components/richtext').RichTextContent }} />,
 }
 

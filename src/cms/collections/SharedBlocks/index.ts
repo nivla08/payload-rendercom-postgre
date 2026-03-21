@@ -8,6 +8,7 @@ import {
   readPublishedOrPrivileged,
 } from '@/cms/access'
 import { PAGE_BLOCKS } from '@/cms/blocks'
+import { syncSharedBlockMediaUsageAfterChange, syncSharedBlockMediaUsageAfterDelete } from './hooks/syncMediaUsage'
 
 export const SharedBlocks: CollectionConfig = {
   slug: 'shared-blocks',
@@ -35,6 +36,10 @@ export const SharedBlocks: CollectionConfig = {
   },
   versions: {
     drafts: true,
+  },
+  hooks: {
+    afterChange: [syncSharedBlockMediaUsageAfterChange],
+    afterDelete: [syncSharedBlockMediaUsageAfterDelete],
   },
   fields: [
     {
