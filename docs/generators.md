@@ -1,6 +1,9 @@
 # Generators
 
-This starter uses plop for collection/global scaffolding and a local interactive generator for reusable fields and blocks.
+This starter keeps the built-in generator commands aligned with the distro defaults. In this repo:
+
+- collections and globals still delegate to plop
+- fields and blocks use the interactive local generator
 
 ## Commands
 
@@ -27,6 +30,7 @@ Behavior:
 - normalizes generated field names to camelCase
 - updates `src/cms/fields/index.ts` when you confirm export
 - fails fast if the helper file name or helper export already exists
+- supports `--dry-run`
 
 Generated output:
 
@@ -57,6 +61,7 @@ Behavior:
   - existing block slug
   - existing renderer registry key
 - repeated runs keep exports/imports/registry updates idempotent
+- supports `--dry-run`
 
 Generated output:
 
