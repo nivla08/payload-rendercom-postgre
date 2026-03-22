@@ -43,6 +43,23 @@ const defaultConfig = {
   },
 }
 
+const envPathMappings = [
+  ['SCAFFOLDER_COLLECTIONS_DIR', ['paths', 'collectionsDir']],
+  ['SCAFFOLDER_COLLECTIONS_INDEX', ['paths', 'collectionsIndex']],
+  ['SCAFFOLDER_GLOBALS_DIR', ['paths', 'globalsDir']],
+  ['SCAFFOLDER_GLOBALS_INDEX', ['paths', 'globalsIndex']],
+  ['SCAFFOLDER_FIELDS_DIR', ['paths', 'fieldsDir']],
+  ['SCAFFOLDER_FIELDS_INDEX', ['paths', 'fieldsIndex']],
+  ['SCAFFOLDER_BLOCKS_DIR', ['paths', 'blocksDir']],
+  ['SCAFFOLDER_BLOCKS_INDEX', ['paths', 'blocksIndex']],
+  ['SCAFFOLDER_BLOCK_COMPONENTS_DIR', ['paths', 'blockComponentsDir']],
+  ['SCAFFOLDER_BLOCK_COMPONENTS_INDEX', ['paths', 'blockComponentIndex']],
+  ['SCAFFOLDER_BLOCK_REGISTRY', ['paths', 'blockRegistry']],
+  ['SCAFFOLDER_PLOPFILE', ['paths', 'plopfile']],
+  ['SCAFFOLDER_BLOCK_ARRAY_NAME', ['registration', 'blockArrayName']],
+  ['SCAFFOLDER_BLOCK_REGISTRY_OBJECT_NAME', ['registration', 'blockRegistryObjectName']],
+]
+
 const hasPath = (rootDir, relativePath) => fs.existsSync(path.join(rootDir, relativePath))
 
 const inferDistroId = (rootDir) => {
@@ -52,8 +69,33 @@ const inferDistroId = (rootDir) => {
   return defaultConfig.distro.id
 }
 
+const setNestedValue = (target, pathParts, value) => {
+  let current = target
+
+  for (let index = 0; index < pathParts.length - 1; index += 1) {
+    const part = pathParts[index]
+    current[part] ??= {}
+    current = current[part]
+  }
+
+  current[pathParts[pathParts.length - 1]] = value
+}
+
+const loadEnvOverrides = (env = process.env) => {
+  const overrides = {}
+
+  for (const [envName, pathParts] of envPathMappings) {
+    const value = env[envName]
+    if (!value) continue
+    setNestedValue(overrides, pathParts, value)
+  }
+
+  return overrides
+}
+
 export const loadScaffolderAdapter = async (rootDir) => {
   const configPath = path.join(rootDir, 'scaffolder.config.mjs')
+  const envOverrides = loadEnvOverrides(process.env)
 
   if (fs.existsSync(configPath)) {
     const loadedConfig = await import(`${pathToFileURL(configPath).href}?t=${Date.now()}`)
@@ -62,39 +104,64 @@ export const loadScaffolderAdapter = async (rootDir) => {
     return {
       ...defaultConfig,
       ...repoScaffolderConfig,
+      ...envOverrides,
       distro: {
         ...defaultConfig.distro,
         ...repoScaffolderConfig?.distro,
+        ...envOverrides?.distro,
         runtime: {
           ...defaultConfig.distro.runtime,
           ...repoScaffolderConfig?.distro?.runtime,
+          ...envOverrides?.distro?.runtime,
         },
       },
       generators: {
         ...defaultConfig.generators,
         ...repoScaffolderConfig?.generators,
+        ...envOverrides?.generators,
       },
       paths: {
         ...defaultConfig.paths,
         ...repoScaffolderConfig?.paths,
+        ...envOverrides?.paths,
       },
       naming: {
         ...defaultConfig.naming,
         ...repoScaffolderConfig?.naming,
+        ...envOverrides?.naming,
       },
       registration: {
         ...defaultConfig.registration,
         ...repoScaffolderConfig?.registration,
+        ...envOverrides?.registration,
       },
     }
   }
 
   return {
     ...defaultConfig,
+    ...envOverrides,
     distro: {
       ...defaultConfig.distro,
+      ...envOverrides?.distro,
       id: inferDistroId(rootDir),
       label: inferDistroId(rootDir),
+    },
+    generators: {
+      ...defaultConfig.generators,
+      ...envOverrides?.generators,
+    },
+    paths: {
+      ...defaultConfig.paths,
+      ...envOverrides?.paths,
+    },
+    naming: {
+      ...defaultConfig.naming,
+      ...envOverrides?.naming,
+    },
+    registration: {
+      ...defaultConfig.registration,
+      ...envOverrides?.registration,
     },
   }
 }
@@ -103,6 +170,7 @@ export const summarizeAdapter = (adapter) => ({
   distro: adapter.distro.id,
   fieldsDir: adapter.paths.fieldsDir,
   collectionsDir: adapter.paths.collectionsDir,
+  globalsDir: adapter.paths.globalsDir,
   blocksDir: adapter.paths.blocksDir,
   blockRegistry: adapter.paths.blockRegistry,
   blockComponentIndex: adapter.paths.blockComponentIndex,
