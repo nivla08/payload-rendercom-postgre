@@ -7,12 +7,7 @@ type Props = {
   blocks?: GenericBlockData[] | null
 }
 
-/**
- * Shared block renderer for Payload block arrays.
- *
- * Use this in frontend routes once a project has registered block components in
- * `registry.tsx`.
- */
+// Shared page-block renderer so routes stay focused on data loading.
 export const RenderBlocks = ({ blocks }: Props) => {
   if (!blocks?.length) return null
 

@@ -342,9 +342,9 @@ const assertBlockDoesNotExist = ({ exportName, componentName, pascalName, slug }
     )
   }
 
-  const componentFilePath = path.join(blockComponentsDir, `${componentName}.tsx`)
+  const componentFilePath = path.join(blockComponentsDir, componentName, 'index.tsx')
   if (fs.existsSync(componentFilePath)) {
-    throw new Error(`Frontend block component already exists at src/components/blocks/${componentName}.tsx.`)
+    throw new Error(`Frontend block component already exists at src/components/blocks/${componentName}/index.tsx.`)
   }
 
   const rendererKey = asRendererKey(slug)
@@ -765,7 +765,7 @@ const buildBlockConfigFile = (config) => {
 const buildBlockEntryFile = (config) => `export { ${config.exportName} } from './config'\n`
 
 const buildBlockComponentFile = (config) =>
-  `import type { GenericBlockData } from './types'\n\ntype Props = {\n  block: GenericBlockData\n}\n\nexport const ${config.componentName} = ({ block }: Props) => {\n  return (\n    <section className="starter-block starter-block--generated" data-block-type=${quote(config.slug)}>\n      <h2>${config.label}</h2>\n      <pre>{JSON.stringify(block, null, 2)}</pre>\n    </section>\n  )\n}\n`
+  `import type { GenericBlockData } from '../types'\n\ntype Props = {\n  block: GenericBlockData\n}\n\nexport const ${config.componentName} = ({ block }: Props) => {\n  return (\n    <section className="starter-block starter-block--generated" data-block-type=${quote(config.slug)}>\n      <h2>${config.label}</h2>\n      <pre>{JSON.stringify(block, null, 2)}</pre>\n    </section>\n  )\n}\n`
 
 const normalizeBlocksIndex = (filePath) => {
   const source = readFile(filePath)
@@ -947,7 +947,7 @@ export const generateBlock = async (options = {}) => {
     updateCmsBlocksIndex({ exportName, pascalName })
 
     if (addFrontendComponent) {
-      writeFile(path.join(blockComponentsDir, `${componentName}.tsx`), buildBlockComponentFile({ componentName, label, slug }), {
+      writeFile(path.join(blockComponentsDir, componentName, 'index.tsx'), buildBlockComponentFile({ componentName, label, slug }), {
         generated: true,
       })
       updateBlockComponentIndex({ componentName })
