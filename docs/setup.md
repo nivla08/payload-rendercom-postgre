@@ -125,6 +125,39 @@ pnpm sync:local
 pnpm dev
 ```
 
+## After Editing Schema Files
+
+If you add, remove, rename, or change persisted fields in files such as:
+
+- `src/cms/collections/**`
+- `src/cms/globals/**`
+- `src/cms/fields/**`
+- `src/cms/payload.config.ts`
+
+do not expect `pnpm dev` alone to update PostgreSQL schema.
+
+Typical symptom:
+
+- admin/frontend compiles
+- API or page queries fail because the database still reflects the old schema
+
+Use this sequence right after the schema edit:
+
+```bash
+pnpm migrate:create
+pnpm migrate
+pnpm migrate:app
+pnpm verify:data
+```
+
+Then continue with `pnpm dev`.
+
+Rule of thumb:
+
+- changed schema shape -> create and run a DB migration
+- changed existing data only -> run or add an app migration
+- changed frontend/service code only -> no DB migration needed
+
 ## Docker defaults
 
 If you use the provided Docker PostgreSQL service, the expected local connection string is:

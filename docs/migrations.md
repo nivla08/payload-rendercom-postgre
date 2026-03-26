@@ -21,6 +21,15 @@ This starter uses two migration layers:
 4. Apply DB migrations locally with `pnpm migrate`.
 5. Run app/data migrations if needed with `pnpm migrate:app`.
 
+Practical local workflow after a schema edit:
+
+```bash
+pnpm migrate:create
+pnpm migrate
+pnpm migrate:app
+pnpm verify:data
+```
+
 ## When To Create A Migration
 
 Create a new Payload migration when you changed persisted schema such as:
@@ -114,6 +123,10 @@ pnpm migrate
 pnpm migrate:app
 pnpm verify:data
 ```
+
+Common symptom of a missing DB migration:
+
+- the app compiles, but queries fail because the database does not yet have the new column/table shape
 
 Important:
 

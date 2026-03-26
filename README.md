@@ -24,6 +24,16 @@ pnpm setup:local
 pnpm dev
 ```
 
+When you changed persisted schema such as collection/global/field definitions:
+
+```bash
+pnpm migrate:create
+pnpm migrate
+pnpm migrate:app
+pnpm verify:data
+pnpm dev
+```
+
 Open `http://localhost:3000` and create the first user. The first account is automatically promoted to `super-admin`.
 
 For local development across multiple Payload repos, use a unique database name
