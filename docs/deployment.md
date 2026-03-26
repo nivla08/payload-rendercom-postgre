@@ -9,6 +9,13 @@ Supported targets today:
 - Neon for managed Postgres
 - Supabase for managed Postgres
 
+Important distinction:
+
+- Render and Vercel are app hosting targets
+- Neon and Supabase are PostgreSQL providers for `DATABASE_URL`
+- a common pairing is Vercel + Neon or Vercel + Supabase
+- another common pairing is Render web service + Render PostgreSQL
+
 ## Core assumptions
 
 - app runtime: Node.js
@@ -36,6 +43,12 @@ Recommended when using production media storage:
 - `PAYLOAD_STORAGE_S3_BUCKET`
 - provider-specific S3-compatible vars like region, endpoint, and credentials
 
+Provider guidance:
+
+- Render can host both the app and the database, but production uploads should still use S3-compatible storage if durability matters
+- Vercel should use external PostgreSQL plus S3-compatible storage because local filesystem is ephemeral
+- Supabase is typically used here as the managed Postgres connection behind `DATABASE_URL`
+
 ## Deployment flow
 
 Use a flow close to:
@@ -51,6 +64,14 @@ For deployments that support a pre-deploy command, use:
 ```bash
 pnpm migrate && pnpm migrate:app
 ```
+
+Use this checklist before deploy:
+
+1. Confirm all schema changes have committed migration files
+2. Run `pnpm migrate:status`
+3. Run `pnpm verify`
+4. Run `pnpm verify:data`
+5. Apply `pnpm migrate && pnpm migrate:app` in the platform's pre-deploy or CI step
 
 ## Health checks
 

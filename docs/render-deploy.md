@@ -12,6 +12,12 @@ Render is now one supported deployment target for this starter, not the core arc
 - Health check path: `/api/health`
 - Blueprint file: `render.yaml` (optional convenience, not required for the starter itself)
 
+When Render is the right fit:
+
+- you want the Node app hosted on Render
+- you want Render-managed PostgreSQL or another Postgres provider
+- you want a pre-deploy migration step before new code receives traffic
+
 ## Required Render environment variables
 
 - `NODE_ENV=production`
@@ -35,6 +41,8 @@ Recommended values:
 
 Use a Render PostgreSQL instance and set its internal connection string as `DATABASE_URL`.
 
+If you prefer Supabase or Neon for the database, Render can still host the app. In that case, set `DATABASE_URL` to the external provider's production connection string.
+
 ## Media storage
 
 This starter supports local disk uploads for development and small internal deployments, but Render web services do not provide durable local disk storage across deploys or instance replacement.
@@ -47,3 +55,4 @@ For production media, prefer external object storage and treat `PAYLOAD_STORAGE_
 - If you scale to multiple instances, keep media out of local disk storage.
 - Keep `PAYLOAD_SECRET` stable across deploys.
 - Deployment should apply committed migrations only. Do not rely on interactive migration prompts during deploy.
+- `render.yaml` already matches the recommended Render service shape in this repo.

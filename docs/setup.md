@@ -11,12 +11,22 @@ pnpm setup:local
 pnpm dev
 ```
 
+What this starter expects locally:
+
+- app runtime is plain Node.js, not Cloudflare
+- local database is PostgreSQL
+- `pnpm db:up` starts the bundled Docker PostgreSQL service
+- `pnpm dev` is the normal daily development command
+- Render, Vercel, Neon, and Supabase are optional deployment/database choices, not requirements for local startup
+
 `setup:local` will:
 
 - copy `.env.example` to `.env` if `.env` does not exist yet
 - verify that Postgres is reachable and that `DATABASE_URL` does not still use placeholder credentials
 - generate Payload types
 - run typecheck so the starter is ready for development
+
+Use `setup:local:fresh` when you want to overwrite `.env` from `.env.example` first.
 
 ## After pulling latest changes
 
@@ -34,6 +44,19 @@ pnpm sync:local
 - apply app/data migrations
 - run starter data verification
 - run typecheck
+
+Recommended migration check after pulling:
+
+1. Run `pnpm migrate:status`
+2. Run `pnpm migrate`
+3. Run `pnpm migrate:app`
+4. Run `pnpm verify:data`
+
+How to interpret it:
+
+- if teammates already committed migration files, you usually run them locally
+- if you only pulled content/model changes with no migration files yet, confirm whether the branch is incomplete before trying to work around it
+- `sync:local` is the easiest safe default when you just want your local repo caught up
 
 Why the split:
 
@@ -88,6 +111,19 @@ and then runs the normal local bootstrap flow.
 3. Install dependencies with `pnpm install`.
 4. Run `pnpm setup:local`.
 5. Start the app with `pnpm dev`.
+
+Daily default:
+
+```bash
+pnpm dev
+```
+
+After pulling teammate changes:
+
+```bash
+pnpm sync:local
+pnpm dev
+```
 
 ## Docker defaults
 
@@ -197,4 +233,5 @@ The first created account is automatically assigned the `super-admin` role. This
 - `pnpm db:check`: validate local database reachability before migrations
 - `pnpm migrate`: run Payload DB migrations
 - `pnpm migrate:app`: run app/data migrations
+- `pnpm migrate:status`: inspect DB/app migration state
 - `pnpm verify:data`: validate starter migration/data state

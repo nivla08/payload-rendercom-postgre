@@ -11,6 +11,7 @@ This starter uses two migration layers:
 - `pnpm migrate`
 - `pnpm migrate:app`
 - `pnpm migrate:status`
+- `pnpm verify:data`
 
 ## Team workflow
 
@@ -19,6 +20,48 @@ This starter uses two migration layers:
 3. Commit both the schema change and generated migration files.
 4. Apply DB migrations locally with `pnpm migrate`.
 5. Run app/data migrations if needed with `pnpm migrate:app`.
+
+## When To Create A Migration
+
+Create a new Payload migration when you changed persisted schema such as:
+
+- collection fields
+- global fields
+- field names
+- `dbName` values
+- array/group structure that changes generated tables
+- relationship field types or shape
+
+Use:
+
+```bash
+pnpm migrate:create
+```
+
+Do not treat these as migration-worthy by default:
+
+- frontend-only changes
+- styling changes
+- route/component logic changes that do not change stored data shape
+- test-only changes
+
+## When To Create An App Migration
+
+Create an app/data migration when the database schema is already correct, but existing rows or documents need one-time repair or backfill logic.
+
+Typical examples:
+
+- backfilling a new derived field
+- normalizing existing values after a schema rollout
+- repairing legacy content into the new expected format
+
+Use:
+
+```bash
+pnpm migrate:app
+```
+
+App migrations complement schema migrations. They do not replace `pnpm migrate:create`.
 
 ## Renames and schema updates
 
@@ -50,6 +93,28 @@ Safe team pattern:
 5. Commit the schema change and migration in the same PR.
 6. Have teammates run `pnpm sync:local` after pulling.
 
+## How To Check Whether A Migration Is Needed
+
+Use these questions:
+
+1. Did I change how data is stored in Postgres?
+2. Did I rename a field, `dbName`, collection, global, or nested structure?
+3. Did I change a relationship or other persisted field shape?
+
+If yes, create a Payload migration with:
+
+```bash
+pnpm migrate:create
+```
+
+Then apply and verify:
+
+```bash
+pnpm migrate
+pnpm migrate:app
+pnpm verify:data
+```
+
 Important:
 
 - interactive prompts are for local migration generation time
@@ -73,10 +138,25 @@ Every teammate should run:
 
 ```bash
 pnpm install
+pnpm migrate:status
 pnpm migrate
 pnpm migrate:app
+pnpm verify:data
 ```
+
+How to interpret it:
+
+- if `migrate:status` shows pending work, run the migrations before continuing
+- if a branch changed schema files but no migration was committed, stop and fix that in the branch instead of relying on `db:reset`
+- `pnpm sync:local` is still the easiest all-in-one safe command after pulling
 
 ## Production safety
 
 On platforms that support a pre-deploy step, run `pnpm migrate && pnpm migrate:app` before the new release receives traffic.
+
+## Practical Team Rules
+
+- Commit schema changes and generated migration files in the same PR.
+- Never rely on interactive migration generation during deployment.
+- Use `db:reset` only for disposable local starter work, not active shared projects.
+- Run `pnpm verify:data` after migrations so pending app migration issues are surfaced early.

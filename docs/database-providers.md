@@ -13,6 +13,12 @@ All providers ultimately supply a PostgreSQL connection string via:
 
 - `DATABASE_URL`
 
+How to think about provider roles in this starter:
+
+- Render PostgreSQL, Neon, and Supabase are database providers
+- Render web service and Vercel are app hosting choices
+- the app code stays provider-agnostic as long as `DATABASE_URL` is valid
+
 ## Neon
 
 Neon is a strong fit when you want:
@@ -38,6 +44,8 @@ Notes:
 
 - this starter only needs the Postgres database connection
 - Supabase-specific auth/storage features are optional and not required by the starter
+- for this starter, treat Supabase as the Postgres provider behind `DATABASE_URL`
+- Supabase does not replace the need for an app host such as Render or Vercel
 
 ## Render PostgreSQL
 
@@ -52,3 +60,4 @@ Render is a strong fit when you want:
 - use committed migrations for every schema change
 - do not rely on `db:reset` outside disposable local development
 - keep production secrets and connection strings provider-specific, but keep app architecture provider-agnostic
+- keep local Docker/Postgres values in `.env` separate from hosted provider connection strings

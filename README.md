@@ -39,6 +39,12 @@ Platform-ready notes:
 - official S3-compatible object storage support for production media
 - provider-specific docs for Render, Vercel, Neon, and Supabase
 
+Platform fit at a glance:
+
+- Render: full Node app hosting with PostgreSQL and pre-deploy migrations
+- Vercel: app hosting when PostgreSQL is external and media uses S3-compatible storage
+- Supabase: managed PostgreSQL provider for `DATABASE_URL` rather than an app hosting target
+
 ## Starter plan
 
 Must-have:
@@ -128,6 +134,14 @@ docs/
 `setup:local` is intentionally lightweight for a fresh starter clone.
 Use `setup:local:fresh` when you want a full clean local bootstrap, and `sync:local`
 when working on an existing project with committed migrations and team schema changes.
+
+Use the docs in this order:
+
+1. `docs/setup.md` for local development
+2. `docs/deployment.md` for platform overview
+3. `docs/render-deploy.md` or `docs/vercel-deploy.md` for the hosting target
+4. `docs/database-providers.md` for Render Postgres, Neon, or Supabase connection guidance
+5. `docs/migrations.md` for when to create, run, and check migrations
 
 For active projects, renaming fields, changing `dbName`, or restructuring arrays/groups
 should always be captured in a committed migration. `db:reset` is only safe for disposable

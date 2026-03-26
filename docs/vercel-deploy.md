@@ -8,6 +8,12 @@ Vercel works well for this starter when:
 - media is stored in S3-compatible object storage
 - deployment does not rely on local disk persistence
 
+Use Vercel as the app host, not as the database. Pair it with:
+
+- Supabase Postgres
+- Neon Postgres
+- another managed PostgreSQL provider with SSL support
+
 ## Required environment variables
 
 - `NODE_ENV=production`
@@ -42,3 +48,8 @@ Good pairings for Vercel:
 - Neon
 - Supabase
 - any managed PostgreSQL service with SSL support
+
+Practical deployment reminder:
+
+- run migrations in CI or another controlled step before the Vercel deployment depends on the new schema
+- keep `DATABASE_URL` pointed at the hosted Postgres database, not a local or Docker connection string
