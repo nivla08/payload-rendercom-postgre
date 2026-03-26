@@ -47,6 +47,45 @@ Use:
 pnpm migrate:create
 ```
 
+## How To Scope A Migration
+
+Prefer one migration per logical schema change set.
+
+Good examples:
+
+- one feature adds 2 related fields to `posts` -> one migration
+- one feature updates a collection and its related versioned fields -> one migration
+- one PR changes multiple related schema pieces for the same feature -> one migration
+
+Split into separate migrations when changes are unrelated or have different rollout risk.
+
+Good examples:
+
+- one migration for a new content field, another for unrelated settings restructuring
+- one migration for additive schema, another later migration for a risky rename
+- one schema migration plus a separate app migration for data backfill or repair
+
+Recommended rule:
+
+- related schema changes in the same feature/PR: keep together
+- unrelated schema changes: split them
+- schema changes and data backfills: separate them
+
+Avoid:
+
+- mixing unrelated cleanup into the migration for your current feature
+- editing an old committed migration instead of creating a new one
+- committing a generated migration that includes unexpected drift you did not intend to change
+
+After running `pnpm migrate:create`, review the file before applying it.
+
+If the generated migration includes unrelated changes:
+
+1. stop
+2. investigate the drift
+3. fix the baseline or schema issue
+4. regenerate the migration
+
 Do not treat these as migration-worthy by default:
 
 - frontend-only changes

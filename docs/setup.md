@@ -152,6 +152,12 @@ pnpm verify:data
 
 Then continue with `pnpm dev`.
 
+How to think about the migration file itself:
+
+- if the schema edits are part of one feature, one migration is usually correct
+- if the generated migration includes unrelated tables/columns, stop and fix that drift before committing
+- keep schema migrations separate from app/data migrations
+
 Rule of thumb:
 
 - changed schema shape -> create and run a DB migration
