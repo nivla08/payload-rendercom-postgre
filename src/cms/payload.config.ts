@@ -25,6 +25,9 @@ export default buildConfig({
           exact: true,
           path: '/create-first-user',
         },
+        logout: {
+          Component: './cms/admin/components/LogoutView#LogoutView',
+        },
       },
     },
     importMap: {

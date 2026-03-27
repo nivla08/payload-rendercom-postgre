@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import { generateExpiredPayloadCookie, headersWithCors, logoutOperation, type CollectionConfig } from 'payload'
 
 import { adminOnlyBoolean, canCreateUser, hasAnyPermission, hasPermission, ownByField, PERMISSIONS } from '@/cms/access'
 import { ROLES, ROLE_VALUES } from '@/cms/auth'
@@ -18,6 +18,53 @@ const showPrivilegedUserFields = (
 
 export const Users: CollectionConfig = {
   slug: 'users',
+  endpoints: [
+    {
+      path: '/logout',
+      method: 'post',
+      handler: async (req) => {
+        const headers = headersWithCors({
+          headers: new Headers(),
+          req,
+        })
+
+        const expiredCookie = generateExpiredPayloadCookie({
+          collectionAuthConfig: req.payload.collections.users.config.auth,
+          cookiePrefix: req.payload.config.cookiePrefix,
+        })
+
+        headers.set('Set-Cookie', expiredCookie)
+
+        if (!req.user) {
+          return Response.json(
+            {
+              message: req.t('authentication:logoutSuccessful'),
+            },
+            {
+              headers,
+              status: 200,
+            },
+          )
+        }
+
+        await logoutOperation({
+          allSessions: req.searchParams.get('allSessions') === 'true',
+          collection: req.payload.collections.users,
+          req,
+        })
+
+        return Response.json(
+          {
+            message: req.t('authentication:logoutSuccessful'),
+          },
+          {
+            headers,
+            status: 200,
+          },
+        )
+      },
+    },
+  ],
   access: {
     admin: adminOnlyBoolean,
     create: canCreateUser,
