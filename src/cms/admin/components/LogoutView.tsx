@@ -1,6 +1,14 @@
 'use client'
 
-import { Button, LoadingOverlay, toast, useAuth, useConfig, useRouteTransition, useTranslation } from '@payloadcms/ui'
+import {
+  Button,
+  LoadingOverlay,
+  toast,
+  useAuth,
+  useConfig,
+  useRouteTransition,
+  useTranslation,
+} from '@payloadcms/ui'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { formatAdminURL } from 'payload/shared'
 import React, { useEffect, useRef, useState } from 'react'
@@ -58,7 +66,17 @@ export const LogoutView = () => {
     }
 
     void run()
-  }, [adminRoute, apiRoute, loginRoute, redirect, router, setUser, startRouteTransition, t, userSlug])
+  }, [
+    adminRoute,
+    apiRoute,
+    loginRoute,
+    redirect,
+    router,
+    setUser,
+    startRouteTransition,
+    t,
+    userSlug,
+  ])
 
   if (failed) {
     return (
@@ -72,7 +90,7 @@ export const LogoutView = () => {
           }}
           size="large"
         >
-          {t('general:retry')}
+          Retry
         </Button>
         <Button
           buttonStyle="primary"
