@@ -151,39 +151,6 @@ export interface User {
   id: number;
   roles?: ('super-admin' | 'admin' | 'editor')[] | null;
   status?: ('active' | 'blocked' | 'suspended' | 'deactivated') | null;
-  permissions?:
-    | (
-        | 'admin:access'
-        | 'audit-logs:read'
-        | 'media:access'
-        | 'media:create'
-        | 'media:update'
-        | 'media:update-own'
-        | 'media:delete'
-        | 'media:delete-own'
-        | 'pages:access'
-        | 'pages:create'
-        | 'pages:update'
-        | 'pages:update-own'
-        | 'pages:delete'
-        | 'pages:delete-own'
-        | 'posts:access'
-        | 'posts:create'
-        | 'posts:update'
-        | 'posts:update-own'
-        | 'posts:delete'
-        | 'posts:delete-own'
-        | 'redirects:access'
-        | 'redirects:create'
-        | 'redirects:update'
-        | 'redirects:delete'
-        | 'settings:update'
-        | 'users:create'
-        | 'users:read'
-        | 'users:update'
-        | 'users:delete'
-      )[]
-    | null;
   /**
    * Starter-safe default is deactivate. Hard deletes are opt-in per user.
    */
@@ -684,7 +651,6 @@ export interface PayloadMigration {
 export interface UsersSelect<T extends boolean = true> {
   roles?: T;
   status?: T;
-  permissions?: T;
   deletionStrategy?: T;
   reassignOwnedContentTo?: T;
   updatedAt?: T;

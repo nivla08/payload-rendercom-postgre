@@ -3,7 +3,6 @@ import { ROLE_PRESETS, ROLES } from '@/cms/auth'
 
 export type AuthUser = {
   id?: number | string
-  permissions?: null | string[]
   roles?: null | string[]
   status?: null | string
 }
@@ -25,10 +24,9 @@ export const getUserPermissions = (user: unknown): Permission[] => {
   if (!user || typeof user !== 'object') return []
 
   const authUser = user as AuthUser
-  const explicit = asStringList(authUser.permissions) as Permission[]
   const fromRoles = getUserRoles(authUser).flatMap((role) => ROLE_PRESETS[role] ?? [])
 
-  return [...new Set([...fromRoles, ...explicit])]
+  return [...new Set(fromRoles)]
 }
 
 export const isSuperAdmin = (user: unknown): boolean => {

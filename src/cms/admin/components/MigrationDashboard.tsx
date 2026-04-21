@@ -2,7 +2,7 @@ import { getMigrationStatus } from '@/lib/migrations/status'
 import { isAdmin } from '@/cms/utilities/users'
 
 type DashboardProps = {
-  user?: { id?: number | string; permissions?: string[]; roles?: string[]; status?: string } | null
+  user?: { id?: number | string; roles?: string[]; status?: string } | null
 }
 
 const formatList = (values: string[]): string => (values.length === 0 ? 'None' : values.join(', '))

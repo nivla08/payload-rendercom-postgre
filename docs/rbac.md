@@ -11,13 +11,40 @@
 - roles and permissions live in `src/cms/auth/`
 - access helpers live in `src/cms/access/`
 - collection configs consume centralized access helpers instead of inline permission logic
+- effective permissions are derived from assigned roles only
 
-## Adding a new role safely
+There is no per-user permission override field in the `users` collection. To change a user's access, update the role preset and assign that role to the user.
 
-1. Add the role constant in `src/cms/auth/roles.ts`.
-2. Define its permission preset in `ROLE_PRESETS`.
-3. Add the role to the `Users` collection field options.
-4. Reuse the existing access helpers instead of embedding raw role checks in collections.
+## How to assign permissions to a role
+
+1. Add or reuse a permission constant in `src/cms/auth/permissions.ts`.
+2. Add that permission to the relevant role preset in `src/cms/auth/roles.ts`.
+3. Wire the collection/global access check to that same permission in the relevant schema file.
+4. Verify the role in admin/API using a user that only has that role.
+
+Example:
+
+```ts
+import { PERMISSIONS, ROLES } from '@/cms/auth'
+
+export const ROLE_PRESETS = {
+  [ROLES.EDITOR]: [
+    PERMISSIONS.POSTS_ACCESS,
+    PERMISSIONS.POSTS_CREATE,
+    PERMISSIONS.POSTS_UPDATE_OWN,
+  ],
+}
+```
+
+## How to create a new role
+
+1. Add the role constant and preset in `src/cms/auth/roles.ts`.
+2. Add the role to the `roles` field options in `src/cms/collections/Users/index.ts`.
+3. Review `src/cms/collections/Users/hooks/beforeChange.ts` for starter defaults and user lifecycle rules.
+4. If self-registration should use the new role, update both:
+   `src/cms/globals/SiteSettings/index.ts`
+   `src/lib/site-settings.ts`
+5. Test admin visibility and create/update/delete behavior with a user that has only the new role.
 
 ## User deletion policy
 

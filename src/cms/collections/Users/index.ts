@@ -153,22 +153,6 @@ export const Users: CollectionConfig = {
       },
     },
     {
-      name: 'permissions',
-      type: 'select',
-      hasMany: true,
-      options: Object.values(PERMISSIONS),
-      defaultValue: [],
-      saveToJWT: true,
-      access: {
-        create: ({ req }) => isAdmin(req.user),
-        read: ({ req }) => isAdmin(req.user),
-        update: ({ req }) => isAdmin(req.user),
-      },
-      admin: {
-        condition: showPrivilegedUserFields,
-      },
-    },
-    {
       name: 'deletionStrategy',
       type: 'select',
       defaultValue: 'deactivate',

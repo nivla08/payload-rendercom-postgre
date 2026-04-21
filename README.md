@@ -5,6 +5,7 @@ Reusable Payload CMS starter for Node.js deployments with PostgreSQL.
 This starter is intentionally not a demo app. It focuses on production-grade building blocks that future Payload projects usually need:
 
 - centralized RBAC with `super-admin`, `admin`, and `editor`
+- role-based permissions without per-user overrides
 - guarded user lifecycle and safe delete strategy
 - SMTP email foundation with a safe console fallback for local work
 - explicit console vs SMTP email mode for projects that are not ready to send real email yet

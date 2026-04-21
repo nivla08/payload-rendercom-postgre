@@ -37,9 +37,7 @@ const sanitizeManagedFields = (data: Record<string, unknown>): Record<string, un
     nextData.status = 'active'
   }
 
-  if (!Array.isArray(nextData.permissions)) {
-    nextData.permissions = []
-  }
+  delete nextData.permissions
 
   return nextData
 }
@@ -53,7 +51,6 @@ const sanitizePublicRegistration = async (data: Record<string, unknown>): Promis
 
   return {
     ...data,
-    permissions: [],
     roles: registration.defaultRole ? [registration.defaultRole] : [],
     status: registration.registrationRequiresApproval ? 'blocked' : 'active',
     _verificationToken: null,
@@ -77,14 +74,16 @@ export const beforeChange: CollectionBeforeChangeHook = async ({ data, operation
   })
 
   if (operation === 'create' && usersTotal.totalDocs === 0) {
-    return {
+    const nextData: Record<string, unknown> = {
       ...baseData,
-      permissions: [],
       roles: [ROLES.SUPER_ADMIN],
       status: 'active',
       _verificationToken: null,
       _verified: true,
     }
+
+    delete nextData.permissions
+    return nextData
   }
 
   if (operation === 'create' && !req.user) {
@@ -114,7 +113,6 @@ export const beforeChange: CollectionBeforeChangeHook = async ({ data, operation
 
     if (!isAdmin(req.user) && isEditingSelf) {
       delete nextData.roles
-      delete nextData.permissions
       delete nextData.status
       delete nextData.deletionStrategy
       delete nextData.reassignOwnedContentTo
